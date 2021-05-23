@@ -4,13 +4,13 @@
 
 > Source: https://kubernetes.io
 
-## Login remote server
+## Login to remote servers
 
 ```shell
 ssh -i "~/.ssh/k8s-key-pair.pem" ubuntu@"address"
 ```
 
-Forward port
+With port forwarding
 
 ```shell
 ssh -i "~/.ssh/k8s-key-pair.pem" -L 8001:127.0.0.1:8001 ubuntu@"address"
@@ -34,13 +34,13 @@ docker ––version
 Manage Docker as a non-root user
 
 ```shell
-$ sudo groupadd docker
-$ sudo gpasswd -a $USER docker
+sudo groupadd docker
+sudo gpasswd -a $USER docker
 ```
 
-Either do a `newgrp` docker or log out/in to activate the changes to groups
+Either do a `newgrp` docker or log out/in to activate the changes to groups.
 
-Verify that docker is working properly
+Verify that Docker is working properly
 
 ```shell
 docker run hello-world
@@ -121,19 +121,19 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-Deploying flannel
+### Deploying flannel
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
 
-### Worker node
+### Initializing worker node
 
 ```shell
 sudo hostnamectl set-hostname worker01
 ```
 
-> Then you can join any number of worker nodes by running the following on each as root:
+Join any number of worker nodes by running the following on each
 
 ```shell
 sudo kubeadm join 172.31.21.251:6443 --token l8lmyg.1ruxxngkkloie8br --discovery-token-ca-cert-hash sha256:dd9f32afd796a8ea447d8723a18a4fdeeb7208bd302f6bb4af5b9976d5a015bf --v=5
@@ -195,68 +195,69 @@ Forward the pod port
 kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:443 --address=0.0.0.0
 ```
 
-Remove the admin ServiceAccount and ClusterRoleBinding.
+Access the K8s dashboard through `https://your_server_ip:8080`
 
-```shell
-kubectl -n kubernetes-dashboard delete serviceaccount admin-user
-kubectl -n kubernetes-dashboard delete clusterrolebinding admin-user
-```
-
-## Check everthing is ready
+## Check up that everthing is working properly
 
 ```shell
 kubectl get nodes
 ```
 
-NAME STATUS ROLES AGE VERSION
-master-node Ready control-plane,master 19m v1.21.1
-worker01 Ready <none> 3m5s v1.21.1
-worker02 Ready <none> 75s v1.21.1
+> | NAME        | STATUS | ROLES                | AGE  | VERSION |
+> | :---------- | :----- | :------------------- | :--- | :------ |
+> | master-node | Ready  | control-plane,master | 19m  | v1.21.1 |
+> | worker01    | Ready  | \<none\>             | 3m5s | v1.21.1 |
+> | worker02    | Ready  | \<none\>             | 75s  | v1.21.1 |
 
 ```shell
 kubectl get pods -n kube-system
 ```
 
-NAME                                  READY   STATUS    RESTARTS   AGE
-coredns-558bd4d5db-b4hz7              1/1     Running   0          35m
-coredns-558bd4d5db-t2kr6              1/1     Running   0          35m
-etcd-master-node                      1/1     Running   0          35m
-kube-apiserver-master-node            1/1     Running   0          35m
-kube-controller-manager-master-node   1/1     Running   0          35m
-kube-flannel-ds-6sdc6                 1/1     Running   0          23m
-kube-flannel-ds-td4hf                 1/1     Running   0          18m
-kube-flannel-ds-zthxd                 1/1     Running   0          20m
-kube-proxy-7s2zt                      1/1     Running   0          20m
-kube-proxy-kslt9                      1/1     Running   0          18m
-kube-proxy-pg4zk                      1/1     Running   0          35m
-kube-scheduler-master-node            1/1     Running   0          35m
+> | NAME                                | READY | ROLES   | RESTARTS | AGE |
+> | :---------------------------------- | :---- | :------ | :------- | :-- |
+> | coredns-558bd4d5db-b4hz7            | 1/1   | Running | 0        | 35m |
+> | coredns-558bd4d5db-t2kr6            | 1/1   | Running | 0        | 35m |
+> | etcd-master-node                    | 1/1   | Running | 0        | 35m |
+> | kube-apiserver-master-node          | 1/1   | Running | 0        | 35m |
+> | kube-controller-manager-master-node | 1/1   | Running | 0        | 35m |
+> | kube-flannel-ds-6sdc6               | 1/1   | Running | 0        | 23m |
+> | kube-flannel-ds-td4hf               | 1/1   | Running | 0        | 18m |
+> | kube-flannel-ds-zthxd               | 1/1   | Running | 0        | 20m |
+> | kube-proxy-7s2zt                    | 1/1   | Running | 0        | 20m |
+> | kube-proxy-kslt9                    | 1/1   | Running | 0        | 18m |
+> | kube-proxy-pg4zk                    | 1/1   | Running | 0        | 35m |
+> | kube-scheduler-master-node          | 1/1   | Running | 0        | 35m |
 
 ```shell
 kubectl get pod --all-namespaces -o wide
 ```
-NAMESPACE              NAME                                         READY   STATUS    RESTARTS   AGE     IP              NODE          NOMINATED NODE   READINESS GATES
-default                nginx-deployment-66b6c48dd5-575mz            1/1     Running   0          2m20s   10.244.1.53     worker01      <none>           <none>
-default                nginx-deployment-66b6c48dd5-cb8rx            1/1     Running   0          11m     10.244.2.3      worker02      <none>           <none>
-kube-system            coredns-558bd4d5db-b4hz7                     1/1     Running   0          35m     10.244.0.3      master-node   <none>           <none>
-kube-system            coredns-558bd4d5db-t2kr6                     1/1     Running   0          35m     10.244.0.2      master-node   <none>           <none>
-kube-system            etcd-master-node                             1/1     Running   0          35m     172.31.21.251   master-node   <none>           <none>
-kube-system            kube-apiserver-master-node                   1/1     Running   0          35m     172.31.21.251   master-node   <none>           <none>
-kube-system            kube-controller-manager-master-node          1/1     Running   0          35m     172.31.21.251   master-node   <none>           <none>
-kube-system            kube-flannel-ds-6sdc6                        1/1     Running   0          22m     172.31.21.251   master-node   <none>           <none>
-kube-system            kube-flannel-ds-td4hf                        1/1     Running   0          17m     172.31.31.130   worker02      <none>           <none>
-kube-system            kube-flannel-ds-zthxd                        1/1     Running   0          19m     172.31.26.208   worker01      <none>           <none>
-kube-system            kube-proxy-7s2zt                             1/1     Running   0          19m     172.31.26.208   worker01      <none>           <none>
-kube-system            kube-proxy-kslt9                             1/1     Running   0          17m     172.31.31.130   worker02      <none>           <none>
-kube-system            kube-proxy-pg4zk                             1/1     Running   0          35m     172.31.21.251   master-node   <none>           <none>
-kube-system            kube-scheduler-master-node                   1/1     Running   0          35m     172.31.21.251   master-node   <none>           <none>
-kubernetes-dashboard   dashboard-metrics-scraper-856586f554-l8st2   1/1     Running   0          13m     10.244.2.2      worker02      <none>           <none>
-kubernetes-dashboard   kubernetes-dashboard-78c79f97b4-xmx8j        1/1     Running   0          13m     10.244.1.2      worker01      <none>           <none>
 
-## Run a Stateless Application
+> | NAMESPACE            | NAME                                       | READY | STATUS  | RESTARTS | AGE   | IP            | NODE        | NOMINATED NODE | READINESS GATES |
+> | :------------------- | :----------------------------------------- | :---- | :------ | :------- | :---- | :------------ | :---------- | :------------- | :-------------- |
+> | default              | nginx-deployment-66b6c48dd5-575mz          | 1/1   | Running | 0        | 2m20s | 10.244.1.53   | worker01    | \<none\>       | \<none\>        |
+> | default              | nginx-deployment-66b6c48dd5-cb8rx          | 1/1   | Running | 0        | 11m   | 10.244.2.3    | worker02    | \<none\>       | \<none\>        |
+> | kube-system          | coredns-558bd4d5db-b4hz7                   | 1/1   | Running | 0        | 35m   | 10.244.0.3    | master-node | \<none\>       | \<none\>        |
+> | kube-system          | coredns-558bd4d5db-t2kr6                   | 1/1   | Running | 0        | 35m   | 10.244.0.2    | master-node | \<none\>       | \<none\>        |
+> | kube-system          | etcd-master-node                           | 1/1   | Running | 0        | 35m   | 172.31.21.251 | master-node | \<none\>       | \<none\>        |
+> | kube-system          | kube-apiserver-master-node                 | 1/1   | Running | 0        | 35m   | 172.31.21.251 | master-node | \<none\>       | \<none\>        |
+> | kube-system          | kube-controller-manager-master-node        | 1/1   | Running | 0        | 35m   | 172.31.21.251 | master-node | \<none\>       | \<none\>        |
+> | kube-system          | kube-flannel-ds-6sdc6                      | 1/1   | Running | 0        | 22m   | 172.31.21.251 | master-node | \<none\>       | \<none\>        |
+> | kube-system          | kube-flannel-ds-td4hf                      | 1/1   | Running | 0        | 17m   | 172.31.31.130 | worker02    | \<none\>       | \<none\>        |
+> | kube-system          | kube-flannel-ds-zthxd                      | 1/1   | Running | 0        | 19m   | 172.31.26.208 | worker01    | \<none\>       | \<none\>        |
+> | kube-system          | kube-proxy-7s2zt                           | 1/1   | Running | 0        | 19m   | 172.31.26.208 | worker01    | \<none\>       | \<none\>        |
+> | kube-system          | kube-proxy-kslt9                           | 1/1   | Running | 0        | 17m   | 172.31.31.130 | worker02    | \<none\>       | \<none\>        |
+> | kube-system          | kube-proxy-pg4zk                           | 1/1   | Running | 0        | 35m   | 172.31.21.251 | master-node | \<none\>       | \<none\>        |
+> | kube-system          | kube-scheduler-master-node                 | 1/1   | Running | 0        | 35m   | 172.31.21.251 | master-node | \<none\>       | \<none\>        |
+> | kubernetes-dashboard | dashboard-metrics-scraper-856586f554-l8st2 | 1/1   | Running | 0        | 13m   | 10.244.2.2    | worker02    | \<none\>       | \<none\>        |
+> | kubernetes-dashboard | kubernetes-dashboard-78c79f97b4-xmx8j      | 1/1   | Running | 0        | 13m   | 10.244.1.2    | worker01    | \<none\>       | \<none\>        |
+
+## Deploy a Stateless Application
 
 ```shell
 kubectl apply -f https://k8s.io/examples/application/deployment.yaml
 ```
+
+Remove
 
 ```shell
 kubectl delete deployment nginx-deployment
@@ -264,6 +265,15 @@ kubectl delete deployment nginx-deployment
 
 ## Clean up
 
+Remove the admin ServiceAccount and ClusterRoleBinding.
+
 ```shell
-$ sudo kubeadm reset
+kubectl -n kubernetes-dashboard delete serviceaccount admin-user
+kubectl -n kubernetes-dashboard delete clusterrolebinding admin-user
+```
+
+Run the following command on each node
+
+```shell
+sudo kubeadm reset
 ```
