@@ -18,6 +18,10 @@ ssh -i "~/.ssh/k8s-key-pair.pem" -L 8001:127.0.0.1:8001 ubuntu@"address"
 
 ## Install Docker
 
+<img src=https://www.docker.com/sites/default/files/social/docker_facebook_share.png width=40% />
+
+> Source: https://www.docker.com
+
 ```shell
 sudo apt-get update && \
     sudo apt-get install -y docker.io
@@ -76,7 +80,7 @@ docker run hello-world
 
 ## Creating a K8s cluster with kubeadm
 
-<img src=https://raw.githubusercontent.com/kubernetes/kubeadm/master/logos/stacked/color/kubeadm-stacked-color.png width=30% />
+<img src=https://raw.githubusercontent.com/kubernetes/kubeadm/master/logos/stacked/color/kubeadm-stacked-color.png width=40% />
 
 > Source: https://kubernetes.io
 
@@ -123,6 +127,10 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ### Deploying flannel
 
+<img src=https://github.com/flannel-io/flannel/raw/master/logos/flannel-horizontal-color.png width=50% />
+
+> Source: https://github.com/flannel-io/flannel#flannel
+
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
@@ -147,6 +155,10 @@ sudo kubeadm join 172.31.21.251:6443 --token l8lmyg.1ruxxngkkloie8br --discovery
 > Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 
 ## Deploy Kubernetes Dashboard
+
+<img src=https://github.com/kubernetes/dashboard/raw/master/docs/images/dashboard-ui.png width=100% />
+
+> Source: https://github.com/kubernetes/dashboard#kubernetes-dashboard
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
