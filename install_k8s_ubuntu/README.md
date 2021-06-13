@@ -125,6 +125,13 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
+Optional
+
+untaint master node
+```shell
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
 ### Deploying flannel
 
 <img src=https://github.com/flannel-io/flannel/raw/master/logos/flannel-horizontal-color.png width=50% />
@@ -208,6 +215,21 @@ kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:4
 ```
 
 Access the K8s dashboard through `https://your_server_ip:8080`
+
+### Install Kubernetes Dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+
+### Patch the dashboard to allow skipping login
+kubectl patch deployment kubernetes-dashboard -n kubernetes-dashboard --type 'json' -p '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--enable-skip-login"}]'
+
+### Install Metrics Server
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.2/components.yaml
+
+### Patch the metrisc server to work with insecure TLS
+kubectl patch deployment metrics-server -n kube-system --type 'json' -p '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]'
+
+### Run the Kubectl proxy to allow accessing the dashboard
+kubectl proxy
 
 ## Check up that everthing is working properly
 
