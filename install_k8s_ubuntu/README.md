@@ -211,6 +211,7 @@ kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get
 Forward the pod port
 
 ```shell
+ip -4 addr show eth0
 kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:443 --address=0.0.0.0
 ```
 

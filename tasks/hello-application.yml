@@ -2,12 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hello-world-service
+  namespace: hello-namespace
 spec:
   selector:
-    run: load-balancer-example
+    app: load-balancer-example
   ports:
-    - port: 8008
-      # targetPort: 8008
+    - port: 80
+      targetPort: 8008
       nodePort: 30001
   type: NodePort
 ---
@@ -15,19 +16,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-world
+  namespace: hello-namespace
 spec:
   selector:
     matchLabels:
-      run: load-balancer-example
+      app: load-balancer-example
   replicas: 2
   template:
     metadata:
       labels:
-        run: load-balancer-example
+        app: load-balancer-example
     spec:
       containers:
-        - name: hello-world
-          image: oblivion208/flask-demo-container
+        - name: hello-world-image
+          image: oblivion208/flask-demo-container:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8008
               protocol: TCP
+          resources:
+            requests:
+              cpu: "1"
+              memory: "10Mi"
+            limits:
+              cpu: "4"
+              memory: "50Mi"
