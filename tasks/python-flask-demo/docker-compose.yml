@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  flask-demo:
+    build: 
+      context: .
+    container_name: flask-demo
+    image: oblivion208/flask-demo-container:latest
+    ports:
+      - "5000:5000"
