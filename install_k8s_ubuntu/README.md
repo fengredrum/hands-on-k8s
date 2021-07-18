@@ -86,6 +86,8 @@ docker run hello-world
 
 ### Installing kubeadm, kubelet and kubectl
 
+Some installation prerequisite setups
+
 ```shell
 sudo apt-get install -y apt-transport-https ca-certificates curl
 ```
@@ -99,9 +101,17 @@ echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https:/
 ```
 
 ```shell
-sudo apt-get update && \
-    sudo apt-get install -y kubelet kubeadm kubectl
+curl -s https://packages.cloud.google.com/apt/dists/kubernetes-xenial/main/binary-amd64/Packages | grep Version | awk '{print $2}'
 ```
+
+Install a specific version of kubernetes
+
+```shell
+sudo apt-get update && \
+    sudo apt-get install -qy kubelet=1.18.2-00 kubectl=1.18.2-00 kubeadm=1.18.2-00
+```
+
+Prevent package updating automatically
 
 ```shell
 sudo apt-mark hold kubelet kubeadm kubectl
@@ -116,7 +126,7 @@ sudo hostnamectl set-hostname master-node
 ```
 
 ```shell
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.18.2
 ```
 
 ```shell
@@ -125,9 +135,10 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-Optional
+Optional:
 
-untaint master node
+Untaint master node
+
 ```shell
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
@@ -217,20 +228,25 @@ kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:4
 
 Access the K8s dashboard through `https://your_server_ip:8080`
 
-### Install Kubernetes Dashboard
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+Optional:
 
-### Patch the dashboard to allow skipping login
+Patch the dashboard to allow skipping login
+
+```shell
 kubectl patch deployment kubernetes-dashboard -n kubernetes-dashboard --type 'json' -p '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--enable-skip-login"}]'
+```
 
-### Install Metrics Server
+Install Metrics Server
+
+```shell
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.2/components.yaml
+```
 
-### Patch the metrisc server to work with insecure TLS
+Patch the metrisc server to work with insecure TLS
+
+```shell
 kubectl patch deployment metrics-server -n kube-system --type 'json' -p '[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]'
-
-### Run the Kubectl proxy to allow accessing the dashboard
-kubectl proxy
+```
 
 ## Check up that everthing is working properly
 
