@@ -172,6 +172,47 @@ sudo kubeadm join 172.31.21.251:6443 --token l8lmyg.1ruxxngkkloie8br --discovery
 >
 > Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
 
+## Deploy MetalLB
+
+> MetalLB is a load-balancer implementation for bare metal Kubernetes clusters, using standard routing protocols.
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
+```
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml
+```
+
+```shell
+wget https://raw.githubusercontent.com/google/metallb/v0.10.2/manifests/example-layer2-config.yaml
+```
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 10.10.10.200-10.10.10.210
+```
+
+```shell
+kubectl apply -f example-layer2-config.yaml
+```
+
+Test if MetalLB works properly
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/google/metallb/master/manifests/tutorial-2.yaml
+```
+
 ## Deploy Kubernetes Dashboard
 
 <img src=https://github.com/kubernetes/dashboard/raw/master/docs/images/dashboard-ui.png width=100% />
