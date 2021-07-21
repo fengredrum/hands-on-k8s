@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tf-jupyter-service
+spec:
+  selector:
+    app: tf-jupyter
+  ports:
+  - port: 8888
+    protocol: TCP
+    nodePort: 30061
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tf-jupyter
+  labels:
+    app: tf-jupyter
+spec:
+  selector:
+    matchLabels:
+      app: tf-jupyter
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tf-jupyter
+    spec:
+      containers:
+      - name: tensorflow
+        image: tensorflow/tensorflow:2.4.2-gpu-jupyter
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8888
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+---
+
+---
