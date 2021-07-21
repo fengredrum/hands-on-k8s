@@ -124,10 +124,16 @@ sudo apt-mark hold kubelet kubeadm kubectl
 ```shell
 sudo hostnamectl set-hostname master-node
 ```
-
+Using flannel
 ```shell
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --kubernetes-version=v1.18.2
 ```
+
+Using calico 
+```shell
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --kubernetes-version=v1.18.2
+```
+
 
 ```shell
 mkdir -p $HOME/.kube
@@ -141,6 +147,16 @@ Untaint master node
 
 ```shell
 kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+### Deploying calico
+
+```shell
+kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+```
+
+```shell
+kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 ```
 
 ### Deploying flannel
